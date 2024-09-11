@@ -218,3 +218,53 @@ impl crate::BakalariClient {
         Ok(timetable)
     }
 }
+
+#[cfg(test)]
+mod test {
+    use crate::shared::test::get_credentials;
+    use tokio_test::block_on;
+
+    #[test]
+    fn get_timetable() -> Result<(), reqwest::Error> {
+        let creds = get_credentials();
+        let mut client = block_on(crate::BakalariClient::new(
+            &creds.base_url,
+            &creds.username,
+            &creds.password,
+        ))?;
+        let timetable = block_on(client.get_timetable(chrono::offset::Utc::now()))?;
+
+        println!("{timetable:#?}");
+
+        Ok(())
+    }
+
+    #[test]
+    fn get_current_timetable() -> Result<(), reqwest::Error> {
+        let creds = get_credentials();
+        let mut client = block_on(crate::BakalariClient::new(
+            &creds.base_url,
+            &creds.username,
+            &creds.password,
+        ))?;
+        let timetable = block_on(client.get_current_timetable())?;
+
+        println!("{timetable:#?}");
+
+        Ok(())
+    }
+    #[test]
+    fn get_permanent_timetable() -> Result<(), reqwest::Error> {
+        let creds = get_credentials();
+        let mut client = block_on(crate::BakalariClient::new(
+            &creds.base_url,
+            &creds.username,
+            &creds.password,
+        ))?;
+        let timetable = block_on(client.get_permanent_timetable())?;
+
+        println!("{timetable:#?}");
+
+        Ok(())
+    }
+}

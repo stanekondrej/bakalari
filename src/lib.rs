@@ -2,10 +2,7 @@ mod marks;
 mod shared;
 mod timetable;
 
-#[cfg(test)]
-mod test;
-
-use reqwest::header::{self, HeaderMap, CONTENT_TYPE};
+use reqwest::header::{HeaderMap, CONTENT_TYPE};
 use serde::Deserialize;
 
 /// The actual client. Use its associated methods to access the actual data.
@@ -88,5 +85,25 @@ impl BakalariClient {
 
     fn check_if_token_expired(&self) -> bool {
         chrono::offset::Utc::now() > self.token_expires
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use crate::shared::test::get_credentials;
+    use tokio_test::block_on;
+
+    #[test]
+    fn login() -> Result<(), reqwest::Error> {
+        let creds = get_credentials();
+        let client = block_on(crate::BakalariClient::new(
+            &creds.base_url,
+            &creds.username,
+            &creds.password,
+        ))?;
+
+        println!("{client:#?}");
+
+        Ok(())
     }
 }

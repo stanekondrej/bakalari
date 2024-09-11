@@ -86,7 +86,7 @@ impl crate::BakalariClient {
 
 #[cfg(test)]
 mod test {
-    use crate::test::get_credentials;
+    use crate::shared::test::get_credentials;
     use tokio_test::block_on;
 
     #[test]
