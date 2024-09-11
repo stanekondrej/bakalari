@@ -224,17 +224,12 @@ impl crate::BakalariClient {
 
 #[cfg(test)]
 mod test {
-    use crate::shared::test::get_credentials;
+    use crate::shared::test::setup_client;
     use tokio_test::block_on;
 
     #[test]
     fn get_timetable() -> Result<(), crate::Error> {
-        let creds = get_credentials();
-        let mut client = block_on(crate::BakalariClient::new(
-            &creds.base_url,
-            &creds.username,
-            &creds.password,
-        ))?;
+        let mut client = setup_client()?;
         let timetable = block_on(client.get_timetable(chrono::offset::Utc::now()))?;
 
         println!("{timetable:#?}");
@@ -244,12 +239,7 @@ mod test {
 
     #[test]
     fn get_current_timetable() -> Result<(), crate::Error> {
-        let creds = get_credentials();
-        let mut client = block_on(crate::BakalariClient::new(
-            &creds.base_url,
-            &creds.username,
-            &creds.password,
-        ))?;
+        let mut client = setup_client()?;
         let timetable = block_on(client.get_current_timetable())?;
 
         println!("{timetable:#?}");
@@ -258,12 +248,7 @@ mod test {
     }
     #[test]
     fn get_permanent_timetable() -> Result<(), crate::Error> {
-        let creds = get_credentials();
-        let mut client = block_on(crate::BakalariClient::new(
-            &creds.base_url,
-            &creds.username,
-            &creds.password,
-        ))?;
+        let mut client = setup_client()?;
         let timetable = block_on(client.get_permanent_timetable())?;
 
         println!("{timetable:#?}");

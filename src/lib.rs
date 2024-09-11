@@ -109,17 +109,11 @@ impl BakalariClient {
 
 #[cfg(test)]
 mod test {
-    use crate::shared::test::get_credentials;
-    use tokio_test::block_on;
+    use crate::shared::test::setup_client;
 
     #[test]
     fn login() -> Result<(), crate::Error> {
-        let creds = get_credentials();
-        let client = block_on(crate::BakalariClient::new(
-            &creds.base_url,
-            &creds.username,
-            &creds.password,
-        ))?;
+        let client = setup_client()?;
 
         println!("{client:#?}");
 

@@ -109,17 +109,12 @@ impl crate::BakalariClient {
 
 #[cfg(test)]
 mod test {
-    use crate::shared::test::get_credentials;
+    use crate::shared::test::setup_client;
     use tokio_test::block_on;
 
     #[test]
     fn get_marks() -> Result<(), crate::Error> {
-        let creds = get_credentials();
-        let mut client = block_on(crate::BakalariClient::new(
-            &creds.base_url,
-            &creds.username,
-            &creds.password,
-        ))?;
+        let mut client = setup_client()?;
         let marks = block_on(client.get_marks());
 
         println!("{marks:#?}");
@@ -129,12 +124,7 @@ mod test {
 
     #[test]
     fn get_new_marks_count() -> Result<(), crate::Error> {
-        let creds = get_credentials();
-        let mut client = block_on(crate::BakalariClient::new(
-            &creds.base_url,
-            &creds.username,
-            &creds.password,
-        ))?;
+        let mut client = setup_client()?;
         let count = block_on(client.get_new_marks_count())?;
 
         println!("{count:#?}");
