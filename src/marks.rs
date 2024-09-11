@@ -1,3 +1,5 @@
+//! The `marks` module enables you to fetch info about marks of the logged in user.
+
 use crate::shared;
 use serde::Deserialize;
 
@@ -7,6 +9,7 @@ pub struct MarksResponse {
     pub subjects: Vec<Subject>,
 }
 
+/// Represents a single subject
 #[derive(Deserialize, Debug)]
 pub struct Subject {
     #[serde(rename = "Marks")]
@@ -27,6 +30,7 @@ pub struct Subject {
     pub mark_prediction_enabled: bool,
 }
 
+/// Represents a single mark
 #[derive(Deserialize, Debug)]
 pub struct Mark {
     #[serde(rename = "MarkDate")]

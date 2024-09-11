@@ -1,3 +1,5 @@
+//! This module contains shared code for the different modules.
+
 use serde::Deserialize;
 
 /// Represents a subject

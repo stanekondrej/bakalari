@@ -1,3 +1,6 @@
+//! The timetable module allows you to fetch info about the user's timetable, either present,
+//! permanent, or from an arbitrary date.
+
 use crate::shared;
 use chrono::{Datelike, Utc};
 use serde::Deserialize;
