@@ -196,7 +196,6 @@ impl crate::BakalariClient {
                 "{}/timetable/actual?date={date_string}",
                 &self.api_url
             ))
-            .header("Content-Type", "application/x-www-form-urlencoded")
             .bearer_auth(&self.access_token)
             .send()
             .await?
@@ -220,7 +219,6 @@ impl crate::BakalariClient {
         let timetable: Timetable = self
             .http_client
             .get(format!("{}/timetable/permanent", &self.api_url))
-            .header("Content-Type", "application/x-www-form-urlencoded")
             .bearer_auth(&self.access_token)
             .send()
             .await?

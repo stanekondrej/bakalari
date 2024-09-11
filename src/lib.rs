@@ -1,8 +1,10 @@
+mod marks;
 mod timetable;
 
 #[cfg(test)]
 mod test;
 
+use reqwest::header::{self, HeaderMap, CONTENT_TYPE};
 use serde::Deserialize;
 
 /// The actual client. Use its associated methods to access the actual data.
@@ -31,10 +33,18 @@ impl BakalariClient {
         username: &str,
         password: &str,
     ) -> Result<Self, reqwest::Error> {
-        let client = reqwest::Client::new();
+        let mut headers = HeaderMap::new();
+        headers.insert(
+            CONTENT_TYPE,
+            "application/x-www-form-urlencoded".parse().unwrap(),
+        );
+
+        let client = reqwest::Client::builder()
+            .default_headers(headers)
+            .build()
+            .unwrap();
         let response: LoginResponse = client
             .post(format!("{base_url}/api/login")) // this is really weird - /api/3/login doesn't exist
-            .header("Content-Type", "application/x-www-form-urlencoded")
             .body(format!(
                 "client_id=ANDR&grant_type=password&username={username}&password={password}"
             ))
@@ -60,7 +70,6 @@ impl BakalariClient {
         let response: LoginResponse = self
             .http_client
             .post(format!("{}/api/login", self.base_url))
-            .header("Content-Type", "application/x-www-form-urlencoded")
             .body(format!(
                 "client_id=ANDR=grant_type=refresh_token&refresh_token={}",
                 self.refresh_token
