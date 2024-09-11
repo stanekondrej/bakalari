@@ -1,0 +1,12 @@
+[package]
+name = "bakalari"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+chrono = "0.4.38"
+reqwest = { version = "0.12.7", features = ["json"] }
+serde = { version = "1.0.210", features = ["derive"] }
+
+[dev-dependencies]
+tokio-test = "0.4.4"
