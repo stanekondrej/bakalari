@@ -66,7 +66,8 @@ pub struct Mark {
 }
 
 impl crate::BakalariClient {
-    pub async fn get_marks(&mut self) -> Result<MarksResponse, reqwest::Error> {
+    /// Get all marks in the current term.
+    pub async fn get_marks(&mut self) -> Result<MarksResponse, crate::Error> {
         if self.check_if_token_expired() {
             self.refresh_login().await?;
         };
@@ -82,6 +83,24 @@ impl crate::BakalariClient {
 
         Ok(marks)
     }
+
+    /// Get the count of new, unread marks.
+    pub async fn get_new_marks_count(&mut self) -> Result<u16, crate::Error> {
+        if self.check_if_token_expired() {
+            self.refresh_login().await?;
+        };
+
+        let count = self
+            .http_client
+            .get(format!("{}/marks/count-new", self.api_url))
+            .bearer_auth(&self.access_token)
+            .send()
+            .await?
+            .text()
+            .await?;
+
+        Ok(count.parse()?)
+    }
 }
 
 #[cfg(test)]
@@ -90,7 +109,7 @@ mod test {
     use tokio_test::block_on;
 
     #[test]
-    fn get_marks() -> Result<(), reqwest::Error> {
+    fn get_marks() -> Result<(), crate::Error> {
         let creds = get_credentials();
         let mut client = block_on(crate::BakalariClient::new(
             &creds.base_url,
@@ -100,6 +119,21 @@ mod test {
         let marks = block_on(client.get_marks());
 
         println!("{marks:#?}");
+
+        Ok(())
+    }
+
+    #[test]
+    fn get_new_marks_count() -> Result<(), crate::Error> {
+        let creds = get_credentials();
+        let mut client = block_on(crate::BakalariClient::new(
+            &creds.base_url,
+            &creds.username,
+            &creds.password,
+        ))?;
+        let count = block_on(client.get_new_marks_count())?;
+
+        println!("{count:#?}");
 
         Ok(())
     }

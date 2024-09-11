@@ -4,6 +4,15 @@ mod timetable;
 
 use reqwest::header::{HeaderMap, CONTENT_TYPE};
 use serde::Deserialize;
+use thiserror::Error;
+
+#[derive(Error, Debug)]
+pub enum Error {
+    #[error("error with http request")]
+    Reqwest(#[from] reqwest::Error),
+    #[error("unable to parse a number")]
+    ParseError(#[from] std::num::ParseIntError),
+}
 
 /// The actual client. Use its associated methods to access the actual data.
 #[derive(Debug)]
@@ -26,11 +35,7 @@ struct LoginResponse {
 impl BakalariClient {
     /// Construct a new BakalariClient. The URL should be without any trailing slashes,
     /// e.g. in the following format: `https://bakalari.school.tld`
-    pub async fn new(
-        base_url: &str,
-        username: &str,
-        password: &str,
-    ) -> Result<Self, reqwest::Error> {
+    pub async fn new(base_url: &str, username: &str, password: &str) -> Result<Self, crate::Error> {
         let mut headers = HeaderMap::new();
         headers.insert(
             CONTENT_TYPE,
@@ -64,7 +69,7 @@ impl BakalariClient {
         })
     }
 
-    async fn refresh_login(&mut self) -> Result<(), reqwest::Error> {
+    async fn refresh_login(&mut self) -> Result<(), crate::Error> {
         let response: LoginResponse = self
             .http_client
             .post(format!("{}/api/login", self.base_url))
@@ -94,7 +99,7 @@ mod test {
     use tokio_test::block_on;
 
     #[test]
-    fn login() -> Result<(), reqwest::Error> {
+    fn login() -> Result<(), crate::Error> {
         let creds = get_credentials();
         let client = block_on(crate::BakalariClient::new(
             &creds.base_url,

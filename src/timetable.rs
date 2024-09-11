@@ -158,7 +158,7 @@ impl crate::BakalariClient {
     pub async fn get_timetable(
         &mut self,
         date: chrono::DateTime<Utc>,
-    ) -> Result<Timetable, reqwest::Error> {
+    ) -> Result<Timetable, crate::Error> {
         if self.check_if_token_expired() {
             self.refresh_login().await?;
         }
@@ -196,12 +196,12 @@ impl crate::BakalariClient {
     }
 
     /// Convenience function to get current timetable
-    pub async fn get_current_timetable(&mut self) -> Result<Timetable, reqwest::Error> {
+    pub async fn get_current_timetable(&mut self) -> Result<Timetable, crate::Error> {
         self.get_timetable(chrono::offset::Utc::now()).await
     }
 
     /// Get the permanent timetable
-    pub async fn get_permanent_timetable(&mut self) -> Result<Timetable, reqwest::Error> {
+    pub async fn get_permanent_timetable(&mut self) -> Result<Timetable, crate::Error> {
         if self.check_if_token_expired() {
             self.refresh_login().await?;
         };
@@ -225,7 +225,7 @@ mod test {
     use tokio_test::block_on;
 
     #[test]
-    fn get_timetable() -> Result<(), reqwest::Error> {
+    fn get_timetable() -> Result<(), crate::Error> {
         let creds = get_credentials();
         let mut client = block_on(crate::BakalariClient::new(
             &creds.base_url,
@@ -240,7 +240,7 @@ mod test {
     }
 
     #[test]
-    fn get_current_timetable() -> Result<(), reqwest::Error> {
+    fn get_current_timetable() -> Result<(), crate::Error> {
         let creds = get_credentials();
         let mut client = block_on(crate::BakalariClient::new(
             &creds.base_url,
@@ -254,7 +254,7 @@ mod test {
         Ok(())
     }
     #[test]
-    fn get_permanent_timetable() -> Result<(), reqwest::Error> {
+    fn get_permanent_timetable() -> Result<(), crate::Error> {
         let creds = get_credentials();
         let mut client = block_on(crate::BakalariClient::new(
             &creds.base_url,
