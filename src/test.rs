@@ -18,9 +18,13 @@ fn get_credentials() -> Credentials {
 #[test]
 fn login() -> Result<(), reqwest::Error> {
     let creds = get_credentials();
-    let client = block_on(BakalariClient::new(&creds.base_url, &creds.username, &creds.password))?;
+    let client = block_on(BakalariClient::new(
+        &creds.base_url,
+        &creds.username,
+        &creds.password,
+    ))?;
 
-    println!("{client:?}");
+    println!("{client:#?}");
 
     Ok(())
 }
@@ -28,10 +32,14 @@ fn login() -> Result<(), reqwest::Error> {
 #[test]
 fn get_timetable() -> Result<(), reqwest::Error> {
     let creds = get_credentials();
-    let client = block_on(BakalariClient::new(&creds.base_url, &creds.username, &creds.password))?;
+    let mut client = block_on(BakalariClient::new(
+        &creds.base_url,
+        &creds.username,
+        &creds.password,
+    ))?;
     let timetable = block_on(client.get_timetable(chrono::offset::Utc::now()))?;
 
-    println!("{timetable:?}");
+    println!("{timetable:#?}");
 
     Ok(())
 }
@@ -39,10 +47,29 @@ fn get_timetable() -> Result<(), reqwest::Error> {
 #[test]
 fn get_current_timetable() -> Result<(), reqwest::Error> {
     let creds = get_credentials();
-    let client = block_on(BakalariClient::new(&creds.base_url, &creds.username, &creds.password))?;
+    let mut client = block_on(BakalariClient::new(
+        &creds.base_url,
+        &creds.username,
+        &creds.password,
+    ))?;
     let timetable = block_on(client.get_current_timetable())?;
 
-    println!("{timetable:?}");
+    println!("{timetable:#?}");
+
+    Ok(())
+}
+
+#[test]
+fn get_permanent_timetable() -> Result<(), reqwest::Error> {
+    let creds = get_credentials();
+    let mut client = block_on(BakalariClient::new(
+        &creds.base_url,
+        &creds.username,
+        &creds.password,
+    ))?;
+    let timetable = block_on(client.get_permanent_timetable())?;
+
+    println!("{timetable:#?}");
 
     Ok(())
 }

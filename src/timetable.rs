@@ -1,7 +1,5 @@
-use std::fmt::write;
-
-use serde::Deserialize;
 use chrono::{Datelike, Utc};
+use serde::Deserialize;
 
 /// The main timetable struct
 #[derive(Deserialize, Debug)]
@@ -34,7 +32,7 @@ pub struct Hour {
     #[serde(rename = "BeginTime")]
     pub begin_time: String,
     #[serde(rename = "EndTime")]
-    pub end_time: String
+    pub end_time: String,
 }
 
 /// Represents a day of the week
@@ -49,7 +47,7 @@ pub struct Day {
     #[serde(rename = "DayDescription")]
     pub day_description: String,
     #[serde(rename = "DayType")]
-    pub day_type: String
+    pub day_type: String,
 }
 
 /// A timetable cell
@@ -72,7 +70,7 @@ pub struct Atom {
     #[serde(rename = "HomeworkIds")]
     pub homework_ids: Vec<String>,
     #[serde(rename = "Theme")]
-    pub theme: Option<String>
+    pub theme: Option<String>,
 }
 
 /// Represents a change in the timetable, if any
@@ -93,7 +91,7 @@ pub struct Change {
     #[serde(rename = "TypeAbbrev")]
     pub type_abbreviation: Option<String>,
     #[serde(rename = "TypeName")]
-    pub type_name: Option<String>
+    pub type_name: Option<String>,
 }
 
 /// Represents a class
@@ -104,7 +102,7 @@ pub struct Class {
     #[serde(rename = "Abbrev")]
     pub abbreviation: String,
     #[serde(rename = "Name")]
-    pub name: String
+    pub name: String,
 }
 
 /// Represents a group
@@ -117,7 +115,7 @@ pub struct Group {
     #[serde(rename = "Abbrev")]
     pub abbreviation: String,
     #[serde(rename = "Name")]
-    pub name: String
+    pub name: String,
 }
 
 /// Represents a subject
@@ -128,7 +126,7 @@ pub struct Subject {
     #[serde(rename = "Abbrev")]
     pub abbreviation: String,
     #[serde(rename = "Name")]
-    pub name: String
+    pub name: String,
 }
 
 /// Represents a teacher
@@ -150,7 +148,7 @@ pub struct Room {
     #[serde(rename = "Abbrev")]
     pub abbreviation: String,
     #[serde(rename = "Name")]
-    pub name: String // this is usually an empty string
+    pub name: String, // this is usually an empty string
 }
 
 /// A rotation cycle - symbolizes the fact that each odd week a student might have Biology on
@@ -167,7 +165,14 @@ pub struct Cycle {
 
 impl crate::BakalariClient {
     /// Get timetable by date
-    pub async fn get_timetable(&self, date: chrono::DateTime<Utc>) -> Result<Timetable, reqwest::Error> {
+    pub async fn get_timetable(
+        &mut self,
+        date: chrono::DateTime<Utc>,
+    ) -> Result<Timetable, reqwest::Error> {
+        if self.check_if_token_expired() {
+            self.refresh_login().await?;
+        }
+
         let day: String;
         if date.day() < 10 {
             day = String::from(format!("0{}", date.day()))
@@ -185,8 +190,12 @@ impl crate::BakalariClient {
         // yyyy-mm-dd
         let date_string = format!("{}-{}-{}", date.year(), month, day);
 
-        let timetable = self.http_client
-            .get(format!("{}/timetable/actual?date={date_string}", &self.base_url))
+        let timetable = self
+            .http_client
+            .get(format!(
+                "{}/timetable/actual?date={date_string}",
+                &self.api_url
+            ))
             .header("Content-Type", "application/x-www-form-urlencoded")
             .bearer_auth(&self.access_token)
             .send()
@@ -198,14 +207,20 @@ impl crate::BakalariClient {
     }
 
     /// Convenience function to get current timetable
-    pub async fn get_current_timetable(&self) -> Result<Timetable, reqwest::Error> {
+    pub async fn get_current_timetable(&mut self) -> Result<Timetable, reqwest::Error> {
         self.get_timetable(chrono::offset::Utc::now()).await
     }
 
     /// Get the permanent timetable
-    pub async fn get_permanent_timetable(&self) -> Result<Timetable, reqwest::Error> {
-        let timetable: Timetable = self.http_client
-            .post(format!("{}/api/3/timetable/permanent", &self.base_url))
+    pub async fn get_permanent_timetable(&mut self) -> Result<Timetable, reqwest::Error> {
+        if self.check_if_token_expired() {
+            self.refresh_login().await?;
+        };
+
+        let timetable: Timetable = self
+            .http_client
+            .get(format!("{}/timetable/permanent", &self.api_url))
+            .header("Content-Type", "application/x-www-form-urlencoded")
             .bearer_auth(&self.access_token)
             .send()
             .await?
