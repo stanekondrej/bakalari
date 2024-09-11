@@ -1,3 +1,17 @@
+//! # bakalari
+//!
+//! The `bakalari` crate aims to provide a layer on top of the Bakaláři API, so that using it is
+//! easier and safer. The API isn't officially documented, it changes at random and without notice.
+//! By using something like the `bakalari` crate, you eliminate the need to worry about these
+//! changes yourself.
+//!
+//! Built on top of `reqwest`, this crate is already pretty fast. It has an easily understandable
+//! async interface, and I try my best to document the struct fields as well.
+//!
+//! When building this library, I closely followed the specification in
+//! [this repo](https://github.com/bakalari-api/bakalari-api-v3). It has been a huge help and I
+//! thank all of the contributors for their effort.
+
 mod marks;
 mod shared;
 mod timetable;
@@ -95,17 +109,11 @@ impl BakalariClient {
 
 #[cfg(test)]
 mod test {
-    use crate::shared::test::get_credentials;
-    use tokio_test::block_on;
+    use crate::shared::test::setup_client;
 
     #[test]
     fn login() -> Result<(), crate::Error> {
-        let creds = get_credentials();
-        let client = block_on(crate::BakalariClient::new(
-            &creds.base_url,
-            &creds.username,
-            &creds.password,
-        ))?;
+        let client = setup_client()?;
 
         println!("{client:#?}");
 

@@ -1,3 +1,5 @@
+//! The `marks` module enables you to fetch info about marks of the logged in user.
+
 use crate::shared;
 use serde::Deserialize;
 
@@ -7,6 +9,7 @@ pub struct MarksResponse {
     pub subjects: Vec<Subject>,
 }
 
+/// Represents a single subject
 #[derive(Deserialize, Debug)]
 pub struct Subject {
     #[serde(rename = "Marks")]
@@ -27,6 +30,7 @@ pub struct Subject {
     pub mark_prediction_enabled: bool,
 }
 
+/// Represents a single mark
 #[derive(Deserialize, Debug)]
 pub struct Mark {
     #[serde(rename = "MarkDate")]
@@ -105,17 +109,12 @@ impl crate::BakalariClient {
 
 #[cfg(test)]
 mod test {
-    use crate::shared::test::get_credentials;
+    use crate::shared::test::setup_client;
     use tokio_test::block_on;
 
     #[test]
     fn get_marks() -> Result<(), crate::Error> {
-        let creds = get_credentials();
-        let mut client = block_on(crate::BakalariClient::new(
-            &creds.base_url,
-            &creds.username,
-            &creds.password,
-        ))?;
+        let mut client = setup_client()?;
         let marks = block_on(client.get_marks());
 
         println!("{marks:#?}");
@@ -125,12 +124,7 @@ mod test {
 
     #[test]
     fn get_new_marks_count() -> Result<(), crate::Error> {
-        let creds = get_credentials();
-        let mut client = block_on(crate::BakalariClient::new(
-            &creds.base_url,
-            &creds.username,
-            &creds.password,
-        ))?;
+        let mut client = setup_client()?;
         let count = block_on(client.get_new_marks_count())?;
 
         println!("{count:#?}");
