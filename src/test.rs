@@ -2,12 +2,12 @@ use tokio_test::block_on;
 
 use crate::BakalariClient;
 
-struct Credentials {
-    username: String,
-    password: String,
-    base_url: String,
+pub struct Credentials {
+    pub username: String,
+    pub password: String,
+    pub base_url: String,
 }
-fn get_credentials() -> Credentials {
+pub fn get_credentials() -> Credentials {
     Credentials {
         username: std::env::var("BAKALARI_USERNAME").unwrap(),
         password: std::env::var("BAKALARI_PASSWORD").unwrap(),

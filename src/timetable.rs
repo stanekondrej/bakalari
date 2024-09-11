@@ -1,3 +1,4 @@
+use crate::shared;
 use chrono::{Datelike, Utc};
 use serde::Deserialize;
 
@@ -13,7 +14,7 @@ pub struct Timetable {
     #[serde(rename = "Groups")]
     pub groups: Vec<Group>,
     #[serde(rename = "Subjects")]
-    pub subjects: Vec<Subject>,
+    pub subjects: Vec<shared::Subject>,
     #[serde(rename = "Teachers")]
     pub teachers: Vec<Teacher>,
     #[serde(rename = "Rooms")]
@@ -110,17 +111,6 @@ pub struct Class {
 pub struct Group {
     #[serde(rename = "ClassId")]
     pub class_id: String,
-    #[serde(rename = "Id")]
-    pub id: String,
-    #[serde(rename = "Abbrev")]
-    pub abbreviation: String,
-    #[serde(rename = "Name")]
-    pub name: String,
-}
-
-/// Represents a subject
-#[derive(Deserialize, Debug)]
-pub struct Subject {
     #[serde(rename = "Id")]
     pub id: String,
     #[serde(rename = "Abbrev")]

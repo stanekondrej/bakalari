@@ -1,4 +1,5 @@
 mod marks;
+mod shared;
 mod timetable;
 
 #[cfg(test)]
