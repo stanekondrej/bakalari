@@ -1,0 +1,22 @@
+name: Rust
+
+on: push
+  
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Build
+      run: cargo build --verbose
+    - name: Run tests
+      env: 
+        BAKALARI_USERNAME: ${{ secrets.BAKALARI_USERNAME }}
+        BAKALARI_PASSWORD: ${{ secrets.BAKALARI_PASSWORD }}
+        BAKALARI_BASE_URL: ${{ secrets.BAKALARI_BASE_URL }}
+      run: cargo test --verbose
